@@ -1,0 +1,63 @@
+package cn.edu.swun;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class input {
+	static List<String> list=new ArrayList<>();//创建一个列表用来装按行读取到的内容，因为list方便添加元素而不用一开始定义大小
+	public static void readFileByLines(String filename) throws IOException {//读文件函数
+		File file = new File(filename);
+		BufferedReader reader=null;
+		InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "GBK");//因为要改变编码必须先用InPutStreamReader方法
+		reader = new BufferedReader(inputStreamReader);
+			String tempString = reader.readLine();
+			while((tempString = reader.readLine())!= null) {
+				list.add(tempString);
+				System.out.println(tempString);
+			}
+		inputStreamReader.close();
+		reader.close();//最后不要忘记关闭接口
+	}
+	
+
+	
+	public static void main(String[] args) throws IOException {
+		readFileByLines("E:\\yq_in.txt");//按行读取文档到list
+		System.out.println(list);//list规模128
+		String[][] string = new String[list.size()][];
+		for(int i = 0;i<list.size();i++) {
+			string[i] = list.get(i).split("\\s+");//正则表达式去空字符，\\s+表示多次匹配使用
+		}
+//		for(String[] s :string) {
+//			for(String r :s) {
+//				System.out.println(r);
+//			}
+//		}
+		File file = new File("E:\\yq_myout.txt");
+		FileOutputStream out = new FileOutputStream(file);
+		OutputStreamWriter wr =new OutputStreamWriter(out);
+		String loc = string[0][0];//初始值为浙江省
+		wr.write(loc+"\r\n");//先写入浙江加换行到文档
+		for(int j =0 ;j < string.length;j++) {//0-127;因为已知每行3个元素：省份，城市，数量就不用再遍历
+			if(string[j][0].equals(loc)){//这里千万不能用“==”去判断，因为对象是不一样的，值一样而已
+				wr.write(string[j][1]+"            "+string[j][2]+"\r\n");
+			}
+			else{
+				wr.write("\r\n"+string[j][0]+"\r\n");
+				wr.write(string[j][1]+"            "+string[j][2]+"\r\n");
+				loc = string[j][0];
+				            
+			}
+		}
+		wr.close();
+		
+	}
+}
